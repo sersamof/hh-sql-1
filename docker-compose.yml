@@ -1,0 +1,26 @@
+version: '3.1'
+
+services:
+
+  db:
+    image: postgres:11
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: example
+      POSTGRES_DB: hh_school
+    volumes:
+      #- ./volumes/pg:/var/lib/postgresql/data
+      - ./scripts:/docker-entrypoint-initdb.d
+    ports:
+      - 5434:5432
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: user
+      PGADMIN_DEFAULT_PASSWORD: user
+    volumes:
+      - ./volumes/pgadmin:/var/lib/pgadmin
+    ports:
+      - 8081:80
