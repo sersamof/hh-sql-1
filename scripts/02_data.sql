@@ -1,77 +1,85 @@
-truncate table vacancies_skills cascade;
-truncate table messages cascade;
+truncate table vacancy_skills cascade;
+truncate table message cascade;
 truncate table invitation cascade;
 truncate table vacancy_response cascade;
-truncate table vacancies cascade;
+truncate table vacancy cascade;
 truncate table curriculum_vitae_skills cascade;
 truncate table curriculum_vitae_experience cascade;
 truncate table curriculum_vitae cascade;
-truncate table skills cascade;
-truncate table companies cascade;
-truncate table users cascade;
-truncate table cities cascade;
+truncate table skill cascade;
+truncate table company cascade;
+truncate table auth_info cascade;
+truncate table user_info cascade;
+truncate table city cascade;
 truncate table flood cascade;
 truncate table banned cascade;
 
-alter sequence cities_city_id_seq restart with 1;
-alter sequence users_user_id_seq restart with 1;
-alter sequence flood_flood_id_seq restart with 1;
-alter sequence companies_company_id_seq restart with 1;
-alter sequence vacancies_vacancy_id_seq restart with 1;
-alter sequence skills_skill_id_seq restart with 1;
-alter sequence curriculum_vitae_cv_id_seq restart with 1;
-alter sequence curriculum_vitae_experience_cv_experience_id_seq restart with 1;
-alter sequence vacancy_response_response_id_seq restart with 1;
-alter sequence invitation_invitation_id_seq restart with 1;
-alter sequence messages_message_id_seq restart with 1;
+alter sequence if exists city_city_id_seq restart with 1;
+alter sequence if exists user_info_user_id_seq restart with 1;
+alter sequence if exists flood_flood_id_seq restart with 1;
+alter sequence if exists company_company_id_seq restart with 1;
+alter sequence if exists vacancy_vacancy_id_seq restart with 1;
+alter sequence if exists skill_skill_id_seq restart with 1;
+alter sequence if exists curriculum_vitae_cv_id_seq restart with 1;
+alter sequence if exists curriculum_vitae_experience_cv_experience_id_seq restart with 1;
+alter sequence if exists vacancy_response_response_id_seq restart with 1;
+alter sequence if exists invitation_invitation_id_seq restart with 1;
+alter sequence if exists message_message_id_seq restart with 1;
 
 -- для crypt и gen_salt. хотя скорее солить и хэшировать будет отдельный сервис аутентификации перед передачей в бд
 create extension if not exists pgcrypto;
 
-insert into cities (name)
-values ('Москва'),
-       ('Санкт-Петербург');
+insert into city (city_id, name)
+values (1, 'Москва'),
+       (2, 'Санкт-Петербург');
 
-insert into users (login, last_name, first_name, birth_date, city_id, password)
-values ('user1', 'Антонов', 'Андрей', '1990-10-10', 1, crypt('very_strong_pass', gen_salt('bf'))),
-       ('user2', 'Иванова', 'Антонина', '1992-01-30', 2, crypt('very_strong_pass', gen_salt('bf'))),
-       ('user3', 'Попова', 'Алевтина', '1993-11-28', 2, crypt('very_strong_pass', gen_salt('bf'))),
-       ('user4', 'Михайлов', 'Григорий', '1982-06-12', 2, crypt('very_strong_pass', gen_salt('bf'))),
-       ('user5', 'Сарычев', 'Инокентий', '1987-02-04', 2, crypt('very_strong_pass', gen_salt('bf')));
+insert into user_info (last_name, first_name, birth_date, city_id, registered)
+values ('Антонов', 'Андрей', '1990-10-10', 1, now()),
+       ('Иванова', 'Антонина', '1992-01-30', 2, now()),
+       ('Попова', 'Алевтина', '1993-11-28', 2, now()),
+       ('Михайлов', 'Григорий', '1982-06-12', 2, now()),
+       ('Сарычев', 'Инокентий', '1987-02-04', 2, now());
+
+insert into auth_info (user_id, login, password, active)
+values (1, 'user1', crypt('very_strong_pass', gen_salt('bf')), true),
+       (2, 'user2', crypt('very_strong_pass', gen_salt('bf')), true),
+       (3, 'user3', crypt('very_strong_pass', gen_salt('bf')), true),
+       (4, 'user4', crypt('very_strong_pass', gen_salt('bf')), true),
+       (5, 'user5', crypt('very_strong_pass', gen_salt('bf')), true);
 
 
-insert into companies (name, description, city_id, admin)
-values ('ООО ВЕКТОР', 'Мы специализируемся на всех векторах развития', 1, 1),
-       ('ООО МАТРИЦА', 'Следуй за белым кроликом! Мы больше чем вектор', 1, 1),
-       ('ООО ТЕНЗОР', 'Мы специализируемся на суровой алгебре', 2, 1);
+insert into company (name, description, city_id, admin, active, registered)
+values ('ООО ВЕКТОР', 'Мы специализируемся на всех векторах развития', 1, 1, true, now()),
+       ('ООО МАТРИЦА', 'Следуй за белым кроликом! Мы больше чем вектор', 1, 1, true, now()),
+       ('ООО ТЕНЗОР', 'Мы специализируемся на суровой алгебре', 2, 1, true, now());
 
-insert into companies_hr (company_id, user_id)
+insert into company_hr (company_id, user_id)
 values (1, 5),
        (2, 4),
        (3, 5);
 
-insert into vacancies (company_id, position, description, salary_from, salary_to, experience, city_id, expired)
-values (1, 'Скаляр', 'Ищем скаляры для наших векторов!', 10000, null, 'none', 1, '2018-12-31'),
-       (1, 'Скаляр', 'Ищем скаляры для наших векторов!', 15000, null, 'none', 2, '2018-12-31'),
+insert into vacancy (company_id, position, description, salary_from, salary_to, experience, city_id, expired, posted)
+values (1, 'Скаляр', 'Ищем скаляры для наших векторов!', 10000, null, 'none', 1, '2018-12-31', now()),
+       (1, 'Скаляр', 'Ищем скаляры для наших векторов!', 15000, null, 'none', 2, '2018-12-31', now()),
        (2, 'Единица', 'Срочно ищется единичная матрица, без которой нам не стать полем', null, 400000, 'more than 6', 2,
-        '2018-12-31');
+        '2018-12-31', now());
 
-insert into skills (title)
+insert into skill (title)
 values ('квадратная матрица'),
        ('диагональная матрица'),
        ('единичная матрица'),
        ('скаляр');
 
-insert into vacancies_skills (vacancy_id, skill_id)
+insert into vacancy_skills (vacancy_id, skill_id)
 values (1, 4),
        (3, 1),
        (3, 2),
        (3, 3);
 
-insert into curriculum_vitae (user_id, position, salary_from, salary_to)
-values (3, 'Скаляр', 10000, null),
-       (3, 'Скаляр', 15000, null),
-       (4, 'Матрица', 35000, null);
+insert into curriculum_vitae (user_id, position, salary_from, salary_to, published, moderated, created, updated, public)
+values (3, 'Скаляр', 10000, null, true, true, now(), now(), true),
+       (3, 'Скаляр', 15000, null, true, true, now(), now(), true),
+       (4, 'Матрица', 35000, null, true, true, now(), now(), true);
 
 insert into curriculum_vitae_skills (cv_id, skill_id)
 values (1, 3),
@@ -85,14 +93,16 @@ values (1, 1, null, '1970-01-01', null, 'Сотрудничал с вектор�
        (1, null, 'ООО СКАЛЯР', '1969-01-01', '1969-12-31', 'А до этого работал с другими скалярами'),
        (3, 2, null, '2010-10-10', '2011-10-11', 'Работал в группе D(4,R)');
 
-insert into vacancy_response (vacancy_id, cv_id, message)
-values (2, 1, 'Хочу в новый город!'),
-       (3, 3, 'Смогу быть единицей');
+insert into vacancy_response (vacancy_id, cv_id, message, active, send_time)
+values (2, 1, 'Хочу в новый город!', true, now()),
+       (3, 3, 'Смогу быть единицей', true, now());
 
-insert into invitation (response_id, interview_datetime, contact_person, contact_phone, address, message)
-values (2, '2018-12-30 14:00:00', 'Андреев Алексей Иванович', '79998887766', 'проспект Ленниа, 42', 'Ждем Вас!');
+insert into invitation (response_id, interview_datetime, contact_person, contact_phone, address, message, send_time,
+                        accepted)
+values (2, '2018-12-30 14:00:00', 'Андреев Алексей Иванович', '79998887766', 'проспект Ленниа, 42', 'Ждем Вас!', now(),
+        false);
 
 
-insert into messages(user_id, response_id, message)
-values (5, 1, 'Простите, Вы необходимы в Питере'),
-       (3, 1, 'Жаль');
+insert into message(user_id, response_id, message, send_time)
+values (5, 1, 'Простите, Вы необходимы в Питере', now()),
+       (3, 1, 'Жаль', now());
