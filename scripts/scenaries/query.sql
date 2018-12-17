@@ -112,7 +112,3 @@ from message
        left join vacancy v on vr.vacancy_id = v.vacancy_id
        left join company c on v.company_id = c.company_id
 order by message.send_time ASC;
-
--- авторизация, см. auth в 04_functions.sql
-select auth('user2', 'very_strong_pass', '128.0.0.2');
-

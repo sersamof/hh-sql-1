@@ -11,12 +11,9 @@ truncate table company cascade;
 truncate table auth_info cascade;
 truncate table user_info cascade;
 truncate table city cascade;
-truncate table flood cascade;
-truncate table banned cascade;
 
 alter sequence if exists city_city_id_seq restart with 1;
 alter sequence if exists user_info_user_id_seq restart with 1;
-alter sequence if exists flood_flood_id_seq restart with 1;
 alter sequence if exists company_company_id_seq restart with 1;
 alter sequence if exists vacancy_vacancy_id_seq restart with 1;
 alter sequence if exists skill_skill_id_seq restart with 1;
@@ -48,7 +45,7 @@ values (1, 'user1', crypt('very_strong_pass', gen_salt('bf')), true),
        (5, 'user5', crypt('very_strong_pass', gen_salt('bf')), true);
 
 
-insert into company (name, description, city_id, admin, active, registered)
+insert into company (name, description, city_id, mcp, active, registered)
 values ('ООО ВЕКТОР', 'Мы специализируемся на всех векторах развития', 1, 1, true, now()),
        ('ООО МАТРИЦА', 'Следуй за белым кроликом! Мы больше чем вектор', 1, 1, true, now()),
        ('ООО ТЕНЗОР', 'Мы специализируемся на суровой алгебре', 2, 1, true, now());

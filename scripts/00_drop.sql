@@ -18,6 +18,3 @@ drop table if exists company;
 drop table if exists auth_info;
 drop table if exists user_info;
 drop table if exists city;
-
-drop table if exists flood;
-drop table if exists banned;

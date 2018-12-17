@@ -44,23 +44,6 @@ create table auth_info
   password varchar(60) not null
 );
 
-create table flood
-(
-  flood_id     serial primary key,
-  ip           varchar(50) unique,
-  login        varchar(50) unique,
-  attempts     int       not null,
-  last_attempt timestamp not null,
-  constraint ip_xor_login_not_null check ((ip is not null or login is not null) and
-                                          not (ip is not null and login is not null))
-);
-
-create table banned
-(
-  ip           varchar(50) not null primary key,
-  banned_until timestamp   not null
-);
-
 create table company
 (
   company_id  serial primary key,
@@ -70,7 +53,7 @@ create table company
   city_id     int           not null references city (city_id),
   active      boolean       not null,
   registered  timestamp     not null,
-  admin       int           not null references user_info (user_id)
+  mcp       int           not null references user_info (user_id)
 );
 
 create table company_hr
