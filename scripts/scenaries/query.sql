@@ -2,7 +2,7 @@
 select true as success
 from auth_info
 where login = 'user1'
-  and password = crypt('very_strong_pass', password)
+  and password = 'sfsafafdgdlfkgd'
   and active is true;
 
 -- все активные пользователи с информацией о городе

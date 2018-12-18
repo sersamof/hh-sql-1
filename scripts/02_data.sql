@@ -23,9 +23,6 @@ alter sequence if exists vacancy_response_response_id_seq restart with 1;
 alter sequence if exists invitation_invitation_id_seq restart with 1;
 alter sequence if exists message_message_id_seq restart with 1;
 
--- для crypt и gen_salt. хотя скорее солить и хэшировать будет отдельный сервис аутентификации перед передачей в бд
-create extension if not exists pgcrypto;
-
 insert into city (city_id, name)
 values (1, 'Москва'),
        (2, 'Санкт-Петербург');
@@ -38,11 +35,11 @@ values ('Антонов', 'Андрей', '1990-10-10', 1, now()),
        ('Сарычев', 'Инокентий', '1987-02-04', 2, now());
 
 insert into auth_info (user_id, login, password, active)
-values (1, 'user1', crypt('very_strong_pass', gen_salt('bf')), true),
-       (2, 'user2', crypt('very_strong_pass', gen_salt('bf')), true),
-       (3, 'user3', crypt('very_strong_pass', gen_salt('bf')), true),
-       (4, 'user4', crypt('very_strong_pass', gen_salt('bf')), true),
-       (5, 'user5', crypt('very_strong_pass', gen_salt('bf')), true);
+values (1, 'user1', 'sfsafafdgdlfkgd', true),
+       (2, 'user2', 'sfsafafdgdlfkgd', true),
+       (3, 'user3', 'sfsafafdgdlfkgd', true),
+       (4, 'user4', 'sfsafafdgdlfkgd', true),
+       (5, 'user5', 'sfsafafdgdlfkgd', true);
 
 
 insert into company (name, description, city_id, mcp, active, registered)
