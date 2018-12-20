@@ -43,12 +43,12 @@ values (1, 'user1', 'sfsafafdgdlfkgd', true),
 
 
 insert into company (name, description, city_id, mcp, active, registered)
-values ('ООО ВЕКТОР', 'Мы специализируемся на всех векторах развития', 1, 1, true, now()),
-       ('ООО МАТРИЦА', 'Следуй за белым кроликом! Мы больше чем вектор', 1, 1, true, now()),
+values ('ООО ВЕКТОР', 'Мы специализируемся на всех векторах развития', 1, 5, true, now()),
+       ('ООО МАТРИЦА', 'Следуй за белым кроликом! Мы больше чем вектор', 1, 4, true, now()),
        ('ООО ТЕНЗОР', 'Мы специализируемся на суровой алгебре', 2, 1, true, now());
 
 insert into company_hr (company_id, user_id)
-values (1, 5),
+values (1, 1),
        (2, 4),
        (3, 5);
 
@@ -87,14 +87,12 @@ values (1, 1, null, '1970-01-01', null, 'Сотрудничал с вектор�
        (1, null, 'ООО СКАЛЯР', '1969-01-01', '1969-12-31', 'А до этого работал с другими скалярами'),
        (3, 2, null, '2010-10-10', '2011-10-11', 'Работал в группе D(4,R)');
 
-insert into vacancy_response (vacancy_id, cv_id, message, active, send_time)
-values (2, 1, 'Хочу в новый город!', true, now()),
-       (3, 3, 'Смогу быть единицей', true, now());
+insert into vacancy_response (vacancy_id, cv_id, message, send_time)
+values (2, 1, 'Хочу в новый город!', now()),
+       (3, 3, 'Смогу быть единицей', now());
 
-insert into invitation (response_id, interview_datetime, contact_person, contact_phone, address, message, send_time,
-                        accepted)
-values (2, '2018-12-30 14:00:00', 'Андреев Алексей Иванович', '79998887766', 'проспект Ленниа, 42', 'Ждем Вас!', now(),
-        false);
+insert into invitation (response_id, interview_datetime, message, send_datetime, accepted)
+values (2, '2018-12-30 14:00:00', 'Ждем Вас!', now(), false);
 
 
 insert into message(user_id, response_id, message, send_time)

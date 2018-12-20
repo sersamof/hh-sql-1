@@ -53,13 +53,15 @@ create table company
   city_id     int           not null references city (city_id),
   active      boolean       not null,
   registered  timestamp     not null,
-  mcp       int           not null references user_info (user_id)
+  mcp         int           not null references user_info (user_id)
 );
 
 create table company_hr
 (
   company_id int not null references company (company_id),
-  user_id    int not null references user_info (user_id)
+  user_id    int not null references user_info (user_id),
+  primary key (company_id, user_id)
+
 );
 
 create table vacancy
@@ -128,7 +130,6 @@ create table vacancy_response
   response_id serial primary key,
   vacancy_id  int       not null references vacancy (vacancy_id),
   cv_id       int       not null references curriculum_vitae (cv_id),
-  active      boolean   not null,
   send_time   timestamp not null,
   message     varchar(5000)
 );
@@ -138,14 +139,10 @@ create table vacancy_response
 create table invitation
 (
   invitation_id      serial primary key,
-  response_id        int          not null references vacancy_response (response_id),
-  interview_datetime timestamp    not null,
-  contact_person     varchar(255) not null,
-  contact_phone      varchar(255) not null,
-  contact_mail       varchar(255),
-  address            varchar(255) not null,
-  send_time          timestamp    not null,
-  accepted           boolean      not null,
+  response_id        int       not null references vacancy_response (response_id),
+  interview_datetime timestamp not null,
+  send_datetime      timestamp,
+  accepted           boolean   not null,
   message            varchar(5000)
 );
 
