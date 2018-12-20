@@ -102,7 +102,7 @@ create table curriculum_vitae
   updated     timestamp not null,
   salary_from int,
   salary_to   int,
-  public      boolean   not null -- для упрощения видимость только всем / никому
+  visibility  boolean   not null -- для упрощения видимость только всем / никому
 );
 create table curriculum_vitae_skills
 (

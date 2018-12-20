@@ -70,7 +70,7 @@ values (1, 4),
        (3, 2),
        (3, 3);
 
-insert into curriculum_vitae (user_id, position, salary_from, salary_to, published, moderated, created, updated, public)
+insert into curriculum_vitae (user_id, position, salary_from, salary_to, published, moderated, created, updated, visibility)
 values (3, 'Скаляр', 10000, null, true, true, now(), now(), true),
        (3, 'Скаляр', 15000, null, true, true, now(), now(), true),
        (4, 'Матрица', 35000, null, true, true, now(), now(), true);
