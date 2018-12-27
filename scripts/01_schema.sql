@@ -26,14 +26,14 @@ create table city
 
 create table user_info
 (
-  user_id    serial primary key,
-  last_name  varchar(255) not null,
-  first_name varchar(255) not null,
-  patronymic varchar(255),
-  birth_date date,
-  registered timestamp    not null, -- храним в UTC, конвертация таймзоны на слое представления
-  city_id    int references city (city_id),
-  last_login timestamp
+  user_id         serial primary key,
+  last_name       varchar(255) not null,
+  first_name      varchar(255) not null,
+  patronymic      varchar(255),
+  birth_date      date,
+  registered_time timestamp    not null, -- храним в UTC, конвертация таймзоны на слое представления
+  city_id         int references city (city_id),
+  last_login_time timestamp
 );
 
 create table auth_info
@@ -46,36 +46,36 @@ create table auth_info
 
 create table company
 (
-  company_id  serial primary key,
-  name        varchar(500)  not null,
-  description varchar(5000) not null,
-  url         varchar(255),
-  city_id     int           not null references city (city_id),
-  active      boolean       not null,
-  registered  timestamp     not null,
-  mcp         int           not null references user_info (user_id)
+  company_id       serial primary key,
+  name             varchar(500)  not null,
+  description      varchar(5000) not null,
+  url              varchar(255),
+  city_id          int           not null references city (city_id),
+  active           boolean       not null,
+  registered_time  timestamp     not null,
+  mcp_user_info_id int           not null references user_info (user_id)
 );
 
 create table company_hr
 (
-  company_id int not null references company (company_id),
-  user_id    int not null references user_info (user_id),
-  primary key (company_id, user_id)
+  company_id   int not null references company (company_id),
+  user_info_id int not null references user_info (user_id),
+  primary key (company_id, user_info_id)
 
 );
 
 create table vacancy
 (
-  vacancy_id  serial primary key,
-  company_id  int           not null references company (company_id),
-  position    varchar(255)  not null,
-  description varchar(5000) not null,
-  salary_from int,
-  salary_to   int,
-  experience  experience    not null,
-  city_id     int           not null references city (city_id),
-  posted      timestamp     not null,
-  expired     timestamp     not null
+  vacancy_id   serial primary key,
+  company_id   int           not null references company (company_id),
+  position     varchar(255)  not null,
+  description  varchar(5000) not null,
+  salary_from  int,
+  salary_to    int,
+  experience   experience    not null,
+  city_id      int           not null references city (city_id),
+  posted_time  timestamp     not null,
+  expired_time timestamp     not null
 );
 
 create table skill
@@ -91,29 +91,29 @@ create table vacancy_skills
   primary key (vacancy_id, skill_id)
 );
 
-create table curriculum_vitae
+create table cv
 (
-  cv_id       serial primary key,
-  user_id     int       not null references user_info (user_id),
-  position    varchar(255),
-  published   boolean   not null,
-  moderated   boolean   not null,
-  created     timestamp not null,
-  updated     timestamp not null,
-  salary_from int,
-  salary_to   int,
-  visibility  boolean   not null -- для упрощения видимость только всем / никому
+  cv_id        serial primary key,
+  user_info_id int       not null references user_info (user_id),
+  position     varchar(255),
+  published    boolean   not null,
+  moderated    boolean   not null,
+  created_time timestamp not null,
+  updated_time timestamp not null,
+  salary_from  int,
+  salary_to    int,
+  visibility   boolean   not null -- для упрощения видимость только всем / никому
 );
-create table curriculum_vitae_skills
+create table cv_skills
 (
-  cv_id    int not null references curriculum_vitae (cv_id),
+  cv_id    int not null references cv (cv_id),
   skill_id int not null references skill (skill_id),
   primary key (cv_id, skill_id)
 );
-create table curriculum_vitae_experience
+create table cv_experience
 (
   cv_experience_id serial primary key,
-  cv_id            int  not null references curriculum_vitae (cv_id),
+  cv_id            int  not null references cv (cv_id),
   company_id       int references company (company_id),
   company_name     varchar(500),
   date_from        date not null,
@@ -129,7 +129,7 @@ create table vacancy_response
 (
   response_id serial primary key,
   vacancy_id  int       not null references vacancy (vacancy_id),
-  cv_id       int       not null references curriculum_vitae (cv_id),
+  cv_id       int       not null references cv (cv_id),
   send_time   timestamp not null,
   message     varchar(5000)
 );
@@ -138,21 +138,20 @@ create table vacancy_response
 -- возможно так же unique (response_id, accepted), но по той же причине возможно несколько принятых приглашений
 create table invitation
 (
-  invitation_id      serial primary key,
-  response_id        int       not null references vacancy_response (response_id),
-  interview_datetime timestamp not null,
-  send_datetime      timestamp,
-  accepted           boolean   not null,
-  message            varchar(5000)
+  invitation_id       serial primary key,
+  vacancy_response_id int       not null references vacancy_response (response_id),
+  interview_time      timestamp not null,
+  send_time           timestamp,
+  message             varchar(5000)
 );
 
 create table message
 (
-  message_id  serial primary key,
-  user_id     int           not null references user_info (user_id),
-  response_id int           not null references vacancy_response (response_id),
-  send_time   timestamp     not null,
-  message     varchar(5000) not null
+  message_id          serial primary key,
+  user_info_id        int           not null references user_info (user_id),
+  vacancy_response_id int           not null references vacancy_response (response_id),
+  send_time           timestamp     not null,
+  message             varchar(5000) not null
 );
 
 

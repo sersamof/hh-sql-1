@@ -6,9 +6,9 @@ drop table if exists vacancy_response;
 
 drop table if exists vacancy;
 
-drop table if exists curriculum_vitae_skills;
-drop table if exists curriculum_vitae_experience;
-drop table if exists curriculum_vitae;
+drop table if exists cv_skills;
+drop table if exists cv_experience;
+drop table if exists cv;
 
 drop table if exists skill;
 drop type if exists experience;
