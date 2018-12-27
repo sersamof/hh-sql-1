@@ -1,3 +1,5 @@
+-- захардкоженные id из 02_data.sql
+
 -- попытка авторизации
 select true as success
 from auth_info
@@ -44,7 +46,7 @@ from vacancy
 where expired_time > now();
 
 -- необходимые скилы по вакансии
-select *
+select vacancy_id, s.skill_id, s.title
 from vacancy_skills
        left join skill s on vacancy_skills.skill_id = s.skill_id
 where vacancy_id = 3;
@@ -87,29 +89,71 @@ select cv_id,
 from cv_experience
 group by cv_id;
 
+
+-- обновление cv
+update cv
+set position = 'Единичная матрица'
+where cv_id = 3;
+
+update cv_experience
+set date_to     = '1969-12-29',
+    description = 'Начинал работать со скалярами до unix-эпохи.'
+where cv_experience_id = 3;
+
+--диалоги
+begin transaction;
+insert into messages_topic (messages_topic_id, applicant_user_info_id, hr_user_info_id)
+values (1, 2, 5);
+insert into message (user_info_id, send_time, message, messages_topic_id, sender)
+values (2, now(), 'Хочу в новый город!', 1, 'applicant');
+insert into vacancy_response (send_time, messages_topic_id, vacancy_id)
+values (now(), 1, 2);
+commit;
+
+insert into message (user_info_id, send_time, message, messages_topic_id, sender)
+values (5, now(), 'Простите, Вы необходимы в Питере.', 1, 'hr');
+insert into message (user_info_id, send_time, message, messages_topic_id, sender)
+values (2, now(), 'Жаль.', 1, 'applicant');
+
+
+begin transaction;
+insert into messages_topic (messages_topic_id, applicant_user_info_id, hr_user_info_id)
+values (2, 3, 4);
+insert into message (user_info_id, send_time, message, messages_topic_id, sender)
+values (2, now(), 'Смогу быть единицей!', 2, 'applicant');
+insert into vacancy_response (send_time, messages_topic_id, vacancy_id)
+values (now(), 2, 3);
+commit;
+
+begin transaction;
+insert into message (user_info_id, send_time, message, messages_topic_id, sender)
+values (4, now(), 'Ждем Вас!', 2, 'hr');
+insert into invitation (interview_time, send_time, messages_topic_id)
+values ('2018-12-30 14:00:00', now(), 2);
+commit;
+
+
 -- отклики пользователя
-select user_info_id, response_id, cv.cv_id, position, message
+select *
 from vacancy_response
-       left join cv on vacancy_response.cv_id = cv.cv_id
-where user_info_id = 3;
+       join messages_topic mt on vacancy_response.messages_topic_id = mt.messages_topic_id
+where mt.applicant_user_info_id = 3;
 
 -- приглашения пользователя
-select inv.*, c.name, v.position
-from invitation inv
-       left join vacancy_response vr on inv.vacancy_response_id = vr.response_id
-       left join vacancy v on vr.vacancy_id = v.vacancy_id
-       left join company c on v.company_id = c.company_id
-       left join cv on vr.cv_id = cv.cv_id
-       left join user_info u on cv.user_info_id = u.user_id
-where u.user_id = 4;
+select *
+from invitation
+       join messages_topic mt on invitation.messages_topic_id = mt.messages_topic_id
+where mt.applicant_user_info_id = 3;
 
--- история сообщений (без сопроводительного письма отклика и сообщений приглашений)
-select message_id,
-       u.last_name || ' ' || u.first_name || coalesce(' ' || u.patronymic, '') as sender,
-       message.message
+
+-- история сообщений в топике
+select applicant.last_name || ' ' || applicant.first_name || coalesce(' ' || applicant.patronymic, '') as applicant,
+       hr.last_name || ' ' || hr.first_name || coalesce(' ' || hr.patronymic, '')                      as hr,
+       message.message,
+       message.send_time,
+       message.sender
 from message
-       left join vacancy_response vr on message.vacancy_response_id = vr.response_id
-       left join user_info u on message.user_info_id = u.user_id
-       left join vacancy v on vr.vacancy_id = v.vacancy_id
-       left join company c on v.company_id = c.company_id
-order by message.send_time ASC;
+       join messages_topic mt on message.messages_topic_id = mt.messages_topic_id
+       join user_info applicant on mt.applicant_user_info_id = applicant.user_id
+       join user_info hr on mt.hr_user_info_id = hr.user_id
+where mt.messages_topic_id = 1;

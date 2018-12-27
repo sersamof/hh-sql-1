@@ -122,36 +122,43 @@ create table cv_experience
   constraint cv_exp_company_not_null check (company_id is not null or company_name is not null)
 );
 
+create table messages_topic
+(
+  messages_topic_id      serial primary key,
+  applicant_user_info_id int not null references user_info (user_id),
+  hr_user_info_id        int not null references user_info (user_id)
+);
+
 -- в принципе, (vacancy_id, cv_id) - естественный ключ, но в предположении о том,
 -- что сообщения и приглашения на вакансию обязательно связаны с откликом,
 -- создадим суррогатный ключ для более удобной связи по foreign key
 create table vacancy_response
 (
-  response_id serial primary key,
-  vacancy_id  int       not null references vacancy (vacancy_id),
-  cv_id       int       not null references cv (cv_id),
-  send_time   timestamp not null,
-  message     varchar(5000)
+  response_id       serial primary key,
+  send_time         timestamp not null,
+  vacancy_id        int       not null references vacancy (vacancy_id),
+  messages_topic_id int       not null references messages_topic (messages_topic_id)
 );
 -- возможно стоило бы response_id сдедлать unique, но будем предполагать, что возможно несколько приглашений на один отклик
 -- например, в случае несостоявшейся встречи
 -- возможно так же unique (response_id, accepted), но по той же причине возможно несколько принятых приглашений
 create table invitation
 (
-  invitation_id       serial primary key,
-  vacancy_response_id int       not null references vacancy_response (response_id),
-  interview_time      timestamp not null,
-  send_time           timestamp,
-  message             varchar(5000)
+  invitation_id     serial primary key,
+  interview_time    timestamp not null,
+  send_time         timestamp,
+  messages_topic_id int       not null references messages_topic (messages_topic_id)
 );
 
+-- поскольку в нашей схеме диалог ведется только между 2мя лицами и
+-- для упрощения соискателя ведет всегда один и тот же HR, то направление сообщения определяется простым enum
+create type user_type as enum ('applicant', 'hr');
 create table message
 (
-  message_id          serial primary key,
-  user_info_id        int           not null references user_info (user_id),
-  vacancy_response_id int           not null references vacancy_response (response_id),
-  send_time           timestamp     not null,
-  message             varchar(5000) not null
+  message_id        serial primary key,
+  user_info_id      int           not null references user_info (user_id),
+  send_time         timestamp     not null,
+  message           varchar(5000) not null,
+  messages_topic_id int           not null references messages_topic (messages_topic_id),
+  sender            user_type     not null
 );
-
-
